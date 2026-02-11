@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For My Valentine</title>
+<title>Valentine Surprise</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
 
@@ -52,7 +52,7 @@ body {
   transform:scale(1.08);
 }
 
-/* LETTER */
+/* LETTER SECTION */
 #letterSection {
   position:fixed;
   width:100%;
@@ -84,7 +84,7 @@ body {
 
 .valentine-text {
   font-family:'Playfair Display', serif;
-  font-size:32px;
+  font-size:28px;
   color:#5a3e4d;
   opacity:0;
   transition:opacity 1.5s ease 1.2s;
@@ -127,7 +127,7 @@ button {
   transition:all 0.3s ease;
 }
 
-/* Soft glowing particles */
+/* Glow Background */
 .glow {
   position:fixed;
   width:200px;
@@ -142,6 +142,50 @@ button {
   to { transform:translateY(-50px); }
 }
 
+/* FINAL OVERLAY */
+#finalOverlay {
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  z-index:9999;
+}
+
+#finalOverlay video {
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  z-index:0;
+}
+
+#finalText {
+  position:relative;
+  z-index:1;
+  font-family:'Playfair Display', serif;
+  font-size:6vw;
+  text-align:center;
+  background:linear-gradient(90deg, #ff69b4, #ff1493, #ffc0cb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color:transparent;
+  animation: gradientShift 5s linear infinite, pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+  100% { background-position:0% 50%; }
+}
+
+@keyframes pulse {
+  0%,100% { transform:scale(1); }
+  50% { transform:scale(1.1); }
+}
+
 canvas {
   position:fixed;
   top:0;
@@ -152,8 +196,10 @@ canvas {
 </head>
 <body>
 
+<!-- CONFETTI / FIREWORK CANVAS -->
 <canvas id="confetti"></canvas>
 
+<!-- VIDEO START SECTION -->
 <div id="videoSection">
   <button id="startBtn">Tap to Begin</button>
   <video id="introVideo" playsinline>
@@ -161,10 +207,11 @@ canvas {
   </video>
 </div>
 
+<!-- LETTER SECTION -->
 <div id="letterSection">
   <div class="letter" id="letter">
     <div class="valentine-text" id="valentineText">
-      Sayang saya, Mir'atun Solehah, Will you be my Valentine?
+      Mir'atun Solehah, Dunia saya, Rumah saya, Cinta saya, Will you be my valentine?
     </div>
     <div class="buttons" id="buttons">
       <button class="yesBtn" onclick="sayYes()">Yes</button>
@@ -173,10 +220,16 @@ canvas {
   </div>
 </div>
 
-<audio id="bgMusic" src="music.mp3"></audio>
-<audio id="successSound" src="success.mp3"></audio>
+<!-- AUDIO ELEMENTS -->
+<audio id="bgMusic" src="music.mp3" loop></audio>
+<audio id="hoverSound" src="hover.mp3"></audio>
+<audio id="escapeSound" src="escape.mp3"></audio>
+<audio id="yesSound" src="yes.mp3"></audio>
+<audio id="fireworkSound" src="firework.mp3"></audio>
+<audio id="finalSound" src="final.mp3"></audio>
 
 <script>
+/* ---------------- ELEMENTS ---------------- */
 const video = document.getElementById("introVideo");
 const startBtn = document.getElementById("startBtn");
 const videoSection = document.getElementById("videoSection");
@@ -187,14 +240,13 @@ const buttons = document.getElementById("buttons");
 const noBtn = document.getElementById("noBtn");
 
 const bgMusic = document.getElementById("bgMusic");
-const hoverSound = new Audio("hover.mp3");
-const escapeSound = new Audio("escape.mp3");
-const yesSound = new Audio("yes.mp3");
-const fireworkSound = new Audio("firework.mp3");
-const finalSound = new Audio("final.mp3");
+const hoverSound = document.getElementById("hoverSound");
+const escapeSound = document.getElementById("escapeSound");
+const yesSound = document.getElementById("yesSound");
+const fireworkSound = document.getElementById("fireworkSound");
+const finalSound = document.getElementById("finalSound");
 
-/* ---------------- START ---------------- */
-
+/* ---------------- START VIDEO ---------------- */
 startBtn.onclick = () => {
   startBtn.style.display="none";
   video.style.display="block";
@@ -204,7 +256,6 @@ startBtn.onclick = () => {
 };
 
 /* ---------------- VIDEO END ---------------- */
-
 video.onended = () => {
   videoSection.style.opacity="0";
   setTimeout(()=>{
@@ -218,8 +269,7 @@ video.onended = () => {
   },1500);
 };
 
-/* ---------------- SMOOTH NO BUTTON ---------------- */
-
+/* ---------------- NO BUTTON ---------------- */
 noBtn.style.position="absolute";
 noBtn.style.left="55%";
 noBtn.style.top="60%";
@@ -242,33 +292,27 @@ noBtn.addEventListener("mouseenter", ()=>{
   noBtn.style.top=newY+"px";
 });
 
-/* ---------------- FIREWORK SYSTEM ---------------- */
-
-const canvas = document.getElementById("confetti");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
+/* ---------------- FIREWORK / PARTICLE SYSTEM ---------------- */
+const canvas=document.getElementById("confetti");
+const ctx=canvas.getContext("2d");
+function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-let fireworks=[];
 let particles=[];
 let animationRunning=false;
 
-function createFirework(){
-  const x = Math.random()*canvas.width;
-  const y = Math.random()*canvas.height/2;
+function createFirework(x=null,y=null){
+  const fx = x || Math.random()*canvas.width;
+  const fy = y || Math.random()*canvas.height/2;
 
   fireworkSound.currentTime=0;
   fireworkSound.play();
 
   for(let i=0;i<300;i++){
     particles.push({
-      x:x,
-      y:y,
+      x:fx,
+      y:fy,
       speedX:(Math.random()-0.5)*12,
       speedY:(Math.random()-0.5)*12,
       gravity:0.15,
@@ -277,11 +321,7 @@ function createFirework(){
       life:120
     });
   }
-
-  if(!animationRunning){
-    animationRunning=true;
-    animateFireworks();
-  }
+  if(!animationRunning){ animationRunning=true; animateFireworks(); }
 }
 
 function animateFireworks(){
@@ -293,26 +333,17 @@ function animateFireworks(){
     p.y+=p.speedY;
     p.speedY+=p.gravity;
     p.life--;
-
     ctx.fillStyle=p.color;
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
     ctx.fill();
-
-    if(p.life<=0){
-      particles.splice(index,1);
-    }
+    if(p.life<=0){ particles.splice(index,1); }
   });
 
-  if(particles.length>0){
-    requestAnimationFrame(animateFireworks);
-  } else {
-    animationRunning=false;
-  }
+  if(particles.length>0){ requestAnimationFrame(animateFireworks); } else { animationRunning=false; }
 }
 
-/* ---------------- ROMANTIC BACKGROUND EXPLOSION ---------------- */
-
+/* ---------------- ROMANTIC BACKGROUND SYMBOLS ---------------- */
 function romanticBackground(){
   const themes=["🌹","💋","❤️","🌸","💖"];
   for(let i=0;i<60;i++){
@@ -325,93 +356,53 @@ function romanticBackground(){
     el.style.opacity="0";
     el.style.transition="all 2s ease";
     document.body.appendChild(el);
-
-    setTimeout(()=>{
-      el.style.opacity="1";
-      el.style.transform="scale(1.5)";
-    },100);
+    setTimeout(()=>{ el.style.opacity="1"; el.style.transform="scale(1.5)"; },100);
   }
 }
 
-/* ---------------- YES BUTTON DRAMATIC SEQUENCE ---------------- */
-
+/* ---------------- YES BUTTON SEQUENCE ---------------- */
 function sayYes(){
-  // Play Yes click sound
-  yesSound.currentTime = 0;
-  yesSound.play();
+  yesSound.currentTime=0; yesSound.play();
 
-  // Scale & fade letter
-  letter.style.transition = "all 1s cubic-bezier(.22,1,.36,1)";
-  letter.style.transform = "scale(1.3)";
-  letter.style.opacity = "0";
+  letter.style.transition="all 1s cubic-bezier(.22,1,.36,1)";
+  letter.style.transform="scale(1.3)";
+  letter.style.opacity="0";
 
-  // Launch multiple fireworks across screen
-  for(let i=0;i<5;i++){
-    setTimeout(()=>{
-      createFirework(Math.random()*canvas.width, Math.random()*canvas.height/2);
-    }, i*400);
-  }
+  // Fireworks explosions across screen
+  for(let i=0;i<5;i++){ setTimeout(()=>createFirework(Math.random()*canvas.width, Math.random()*canvas.height/2), i*400); }
 
-  // Overlay romantic symbols
+  // Romantic symbols
   romanticBackground();
 
-  // Play final audio after fireworks start
-  setTimeout(()=>{
-    finalSound.currentTime = 0;
-    finalSound.play();
-  }, 1000);
+  // Play final sound
+  setTimeout(()=>{ finalSound.currentTime=0; finalSound.play(); },1000);
 
-  // Show final "She Said YES" overlay without removing <audio>
+  // Show final overlay
   setTimeout(()=>{
-    const finalOverlay = document.createElement("div");
-    finalOverlay.style.position = "fixed";
-    finalOverlay.style.top = 0;
-    finalOverlay.style.left = 0;
-    finalOverlay.style.width = "100%";
-    finalOverlay.style.height = "100%";
-    finalOverlay.style.display = "flex";
-    finalOverlay.style.justifyContent = "center";
-    finalOverlay.style.alignItems = "center";
-    finalOverlay.style.background = "linear-gradient(135deg,#ff69b4,#ff1493)";
-    finalOverlay.style.color = "white";
-    finalOverlay.style.fontFamily = "'Playfair Display', serif";
-    finalOverlay.style.fontSize = "60px";
-    finalOverlay.style.zIndex = "9999";
-    finalOverlay.style.animation = "fadeIn 2s ease forwards";
-    finalOverlay.innerText = "She Said YES";
+    const finalOverlay=document.createElement("div");
+    finalOverlay.id="finalOverlay";
+    const videoEl=document.createElement("video");
+    videoEl.id="finalBg";
+    videoEl.autoplay=true; videoEl.loop=true; videoEl.muted=true; videoEl.playsInline=true;
+    videoEl.src="romantic-bg.mp4"; // replace with your video
+    finalOverlay.appendChild(videoEl);
+
+    const h1=document.createElement("h1");
+    h1.id="finalText"; h1.innerText="YEAYYYYY";
+    finalOverlay.appendChild(h1);
 
     document.body.appendChild(finalOverlay);
-  }, 2500);
+  },2500);
 }
 
-// Modified createFirework to accept x,y for full screen explosions
-function createFirework(x = null, y = null){
-  const fx = x || Math.random()*canvas.width;
-  const fy = y || Math.random()*canvas.height/2;
-
-  fireworkSound.currentTime = 0;
-  fireworkSound.play();
-
-  for(let i=0;i<300;i++){
-    particles.push({
-      x: fx,
-      y: fy,
-      speedX: (Math.random()-0.5)*12,
-      speedY: (Math.random()-0.5)*12,
-      gravity: 0.15,
-      size: 3 + Math.random()*4,
-      color: ["#ff69b4","#ff1493","#ffc0cb","#ff85a2","#ff4d88"][Math.floor(Math.random()*5)],
-      life: 120
-    });
-  }
-
-  if(!animationRunning){
-    animationRunning = true;
-    animateFireworks();
-  }
+/* ---------------- SOFT GLOW PARTICLES ---------------- */
+for(let i=0;i<3;i++){
+  let glow=document.createElement("div");
+  glow.classList.add("glow");
+  glow.style.left=Math.random()*80+"vw";
+  glow.style.top=Math.random()*80+"vh";
+  document.body.appendChild(glow);
 }
-
 </script>
-
 </body>
 </html>
