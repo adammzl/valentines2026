@@ -40,6 +40,15 @@ body {
   object-fit: cover;
 }
 
+.fade-out {
+  animation: fadeOut 1.5s forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 /* LETTER SECTION */
 
 #letterSection {
@@ -62,6 +71,8 @@ body {
 /* LETTER */
 
 .letter {
+  background: linear-gradient(145deg, #fffafc, #ffe6f0);
+border: 1px solid #ffb6c1;
   width: 350px;
   height: 220px;
   background: #fffafc;
@@ -129,6 +140,23 @@ button {
   color: white;
   position: relative;
 }
+
+.hearts::before {
+  content: "💗 💕 💖 💞 💓";
+  position: fixed;
+  bottom: -50px;
+  font-size: 24px;
+  animation: floatUp 15s linear infinite;
+  opacity: 0.3;
+  width: 100%;
+  text-align: center;
+}
+
+@keyframes floatUp {
+  from { transform: translateY(0); }
+  to { transform: translateY(-110vh); }
+}
+
 </style>
 </head>
 <body>
@@ -146,6 +174,9 @@ button {
     <div class="valentine-text" id="valentineText">
       Will you be my Valentine?
     </div>
+
+    <div class="hearts"></div>
+
 
     <div class="buttons" id="buttons">
       <button class="yesBtn" onclick="sayYes()">Yes ❤️</button>
@@ -200,11 +231,31 @@ function sayYes() {
       font-family:'Great Vibes',cursive;
       font-size:50px;
       color:#ff1493;
+      flex-direction:column;
     ">
       She said YES ❤️
     </div>
   `;
+
+  for (let i = 0; i < 100; i++) {
+    let confetti = document.createElement("div");
+    confetti.style.position = "fixed";
+    confetti.style.width = "8px";
+    confetti.style.height = "8px";
+    confetti.style.background = "#ff69b4";
+    confetti.style.left = Math.random() * window.innerWidth + "px";
+    confetti.style.top = "-10px";
+    confetti.style.opacity = 0.7;
+    confetti.style.transform = "rotate(45deg)";
+    confetti.style.transition = "top 3s linear";
+    document.body.appendChild(confetti);
+
+    setTimeout(() => {
+      confetti.style.top = window.innerHeight + "px";
+    }, 10);
+  }
 }
+
 </script>
 
 </body>
