@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For My Valentine</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -25,8 +25,8 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:10;
   transition:opacity 1.5s ease;
+  z-index:10;
 }
 
 #introVideo {
@@ -37,23 +37,22 @@ body {
 }
 
 #startBtn {
-  position:absolute;
-  padding:16px 40px;
-  font-size:18px;
+  padding:18px 45px;
   background:#ff69b4;
   color:white;
   border:none;
-  border-radius:40px;
+  border-radius:50px;
+  font-size:18px;
   cursor:pointer;
-  transition:0.3s;
+  transition:all 0.4s cubic-bezier(.22,1,.36,1);
 }
 
 #startBtn:hover {
   background:#ff1493;
-  transform:scale(1.05);
+  transform:scale(1.08);
 }
 
-/* LETTER SECTION */
+/* LETTER */
 #letterSection {
   position:fixed;
   width:100%;
@@ -61,7 +60,6 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  background:#fff0f5;
   opacity:0;
   transition:opacity 2s ease;
   perspective:1200px;
@@ -70,15 +68,15 @@ body {
 #letterSection.show { opacity:1; }
 
 .letter {
-  width:380px;
-  height:250px;
+  width:420px;
+  height:260px;
   background:linear-gradient(145deg,#fffafc,#ffe6f0);
-  border-radius:12px;
-  box-shadow:0 20px 50px rgba(255,105,180,0.25);
+  border-radius:16px;
+  box-shadow:0 30px 60px rgba(255,105,180,0.25);
   transform-origin:top;
   transform:rotateX(-90deg);
-  transition:transform 2s ease;
-  padding:40px;
+  transition:transform 2s cubic-bezier(.22,1,.36,1);
+  padding:50px;
   text-align:center;
 }
 
@@ -86,30 +84,30 @@ body {
 
 .valentine-text {
   font-family:'Playfair Display', serif;
-  font-size:30px;
+  font-size:32px;
   color:#5a3e4d;
   opacity:0;
-  transition:opacity 2s ease 1.2s;
+  transition:opacity 1.5s ease 1.2s;
 }
 
 .valentine-text.show { opacity:1; }
 
 .buttons {
-  margin-top:25px;
+  margin-top:30px;
   opacity:0;
-  transition:opacity 2s ease 1.5s;
+  transition:opacity 1.5s ease 1.5s;
 }
 
 .buttons.show { opacity:1; }
 
 button {
-  padding:12px 26px;
+  padding:14px 30px;
   margin:10px;
   border:none;
-  border-radius:30px;
+  border-radius:40px;
   font-size:15px;
   cursor:pointer;
-  transition:0.3s ease;
+  transition:all 0.3s ease;
 }
 
 .yesBtn {
@@ -119,30 +117,31 @@ button {
 
 .yesBtn:hover {
   background:#ff1493;
+  transform:scale(1.05);
 }
 
 .noBtn {
   background:#ffb6c1;
   color:white;
-  position:relative;
+  position:absolute;
+  transition:all 0.3s ease;
 }
 
-/* Floating particles */
-.particle {
+/* Soft glowing particles */
+.glow {
   position:fixed;
-  width:12px;
-  height:12px;
-  background:rgba(255,105,180,0.2);
+  width:200px;
+  height:200px;
+  background:radial-gradient(circle, rgba(255,105,180,0.25) 0%, transparent 70%);
   border-radius:50%;
-  animation:floatUp linear infinite;
+  animation:float 12s infinite ease-in-out alternate;
 }
 
-@keyframes floatUp {
-  from { transform:translateY(100vh) scale(1); }
-  to { transform:translateY(-10vh) scale(1.4); }
+@keyframes float {
+  from { transform:translateY(0px); }
+  to { transform:translateY(-50px); }
 }
 
-/* Confetti Canvas */
 canvas {
   position:fixed;
   top:0;
@@ -165,7 +164,7 @@ canvas {
 <div id="letterSection">
   <div class="letter" id="letter">
     <div class="valentine-text" id="valentineText">
-      Will you be my Valentine?
+      Sayang saya, Mir'atun Solehah, Will you be my Valentine?
     </div>
     <div class="buttons" id="buttons">
       <button class="yesBtn" onclick="sayYes()">Yes</button>
@@ -175,9 +174,6 @@ canvas {
 </div>
 
 <audio id="bgMusic" src="music.mp3"></audio>
-<audio id="noHover" src="no-hover.mp3"></audio>
-<audio id="noRun" src="no-run.mp3"></audio>
-<audio id="yesClick" src="yes-click.mp3"></audio>
 <audio id="successSound" src="success.mp3"></audio>
 
 <script>
@@ -191,25 +187,30 @@ const buttons = document.getElementById("buttons");
 const noBtn = document.getElementById("noBtn");
 
 const bgMusic = document.getElementById("bgMusic");
-const noHover = document.getElementById("noHover");
-const noRun = document.getElementById("noRun");
-const yesClick = document.getElementById("yesClick");
-const successSound = document.getElementById("successSound");
+const hoverSound = new Audio("hover.mp3");
+const escapeSound = new Audio("escape.mp3");
+const yesSound = new Audio("yes.mp3");
+const fireworkSound = new Audio("firework.mp3");
+const finalSound = new Audio("final.mp3");
 
-startBtn.addEventListener("click", () => {
-  startBtn.style.display = "none";
-  video.style.display = "block";
+/* ---------------- START ---------------- */
+
+startBtn.onclick = () => {
+  startBtn.style.display="none";
+  video.style.display="block";
   video.play();
-  bgMusic.volume = 0.4;
+  bgMusic.volume=0.4;
   bgMusic.play();
-});
+};
+
+/* ---------------- VIDEO END ---------------- */
 
 video.onended = () => {
-  videoSection.style.opacity = "0";
-  setTimeout(() => {
-    videoSection.style.display = "none";
+  videoSection.style.opacity="0";
+  setTimeout(()=>{
+    videoSection.style.display="none";
     letterSection.classList.add("show");
-    setTimeout(() => {
+    setTimeout(()=>{
       letter.classList.add("open");
       text.classList.add("show");
       buttons.classList.add("show");
@@ -217,81 +218,199 @@ video.onended = () => {
   },1500);
 };
 
-noBtn.addEventListener("mouseenter", () => {
-  noHover.currentTime = 0;
-  noHover.play();
+/* ---------------- SMOOTH NO BUTTON ---------------- */
+
+noBtn.style.position="absolute";
+noBtn.style.left="55%";
+noBtn.style.top="60%";
+
+noBtn.addEventListener("mouseenter", ()=>{
+  hoverSound.currentTime=0;
+  hoverSound.play();
+
+  const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+  const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+
+  const newX = Math.random()*maxX;
+  const newY = Math.random()*maxY;
+
+  escapeSound.currentTime=0;
+  escapeSound.play();
+
+  noBtn.style.transition="all 0.4s cubic-bezier(.22,1,.36,1)";
+  noBtn.style.left=newX+"px";
+  noBtn.style.top=newY+"px";
 });
 
-noBtn.addEventListener("mouseover", () => {
-  noRun.currentTime = 0;
-  noRun.play();
-  const x = Math.random()*(window.innerWidth-100);
-  const y = Math.random()*(window.innerHeight-50);
-  noBtn.style.position="fixed";
-  noBtn.style.transition="all 0.4s ease";
-  noBtn.style.left=x+"px";
-  noBtn.style.top=y+"px";
-});
+/* ---------------- FIREWORK SYSTEM ---------------- */
 
-function sayYes(){
-  yesClick.play();
-  launchConfetti();
-  setTimeout(()=>{
-    successSound.play();
-    document.body.innerHTML=`
-      <div style="
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      background:#fff0f5;
-      font-family:'Playfair Display',serif;
-      font-size:50px;
-      color:#ff1493;">
-      She said YES
-      </div>`;
-  },1500);
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-/* Animated Confetti */
-const canvas=document.getElementById("confetti");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+let fireworks=[];
+let particles=[];
+let animationRunning=false;
 
-let confettiPieces=[];
+function createFirework(){
+  const x = Math.random()*canvas.width;
+  const y = Math.random()*canvas.height/2;
 
-function launchConfetti(){
-  for(let i=0;i<150;i++){
-    confettiPieces.push({
-      x:Math.random()*canvas.width,
-      y:-10,
-      size:5+Math.random()*5,
-      speed:2+Math.random()*3,
-      color:["#ff69b4","#ff1493","#ffb6c1"][Math.floor(Math.random()*3)]
+  fireworkSound.currentTime=0;
+  fireworkSound.play();
+
+  for(let i=0;i<300;i++){
+    particles.push({
+      x:x,
+      y:y,
+      speedX:(Math.random()-0.5)*12,
+      speedY:(Math.random()-0.5)*12,
+      gravity:0.15,
+      size:3+Math.random()*4,
+      color:["#ff69b4","#ff1493","#ffc0cb","#ff85a2","#ff4d88"][Math.floor(Math.random()*5)],
+      life:120
     });
   }
-  animateConfetti();
+
+  if(!animationRunning){
+    animationRunning=true;
+    animateFireworks();
+  }
 }
 
-function animateConfetti(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  confettiPieces.forEach(p=>{
-    p.y+=p.speed;
+function animateFireworks(){
+  ctx.fillStyle="rgba(255,240,245,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach((p,index)=>{
+    p.x+=p.speedX;
+    p.y+=p.speedY;
+    p.speedY+=p.gravity;
+    p.life--;
+
     ctx.fillStyle=p.color;
-    ctx.fillRect(p.x,p.y,p.size,p.size);
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fill();
+
+    if(p.life<=0){
+      particles.splice(index,1);
+    }
   });
-  requestAnimationFrame(animateConfetti);
+
+  if(particles.length>0){
+    requestAnimationFrame(animateFireworks);
+  } else {
+    animationRunning=false;
+  }
 }
 
-/* Floating background particles */
-for(let i=0;i<20;i++){
-  let p=document.createElement("div");
-  p.classList.add("particle");
-  p.style.left=Math.random()*100+"vw";
-  p.style.animationDuration=(8+Math.random()*5)+"s";
-  document.body.appendChild(p);
+/* ---------------- ROMANTIC BACKGROUND EXPLOSION ---------------- */
+
+function romanticBackground(){
+  const themes=["🌹","💋","❤️","🌸","💖"];
+  for(let i=0;i<60;i++){
+    const el=document.createElement("div");
+    el.innerHTML=themes[Math.floor(Math.random()*themes.length)];
+    el.style.position="fixed";
+    el.style.fontSize=(20+Math.random()*40)+"px";
+    el.style.left=Math.random()*100+"vw";
+    el.style.top=Math.random()*100+"vh";
+    el.style.opacity="0";
+    el.style.transition="all 2s ease";
+    document.body.appendChild(el);
+
+    setTimeout(()=>{
+      el.style.opacity="1";
+      el.style.transform="scale(1.5)";
+    },100);
+  }
 }
+
+/* ---------------- YES BUTTON DRAMATIC SEQUENCE ---------------- */
+
+function sayYes(){
+  // Play Yes click sound
+  yesSound.currentTime = 0;
+  yesSound.play();
+
+  // Scale & fade letter
+  letter.style.transition = "all 1s cubic-bezier(.22,1,.36,1)";
+  letter.style.transform = "scale(1.3)";
+  letter.style.opacity = "0";
+
+  // Launch multiple fireworks across screen
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      createFirework(Math.random()*canvas.width, Math.random()*canvas.height/2);
+    }, i*400);
+  }
+
+  // Overlay romantic symbols
+  romanticBackground();
+
+  // Play final audio after fireworks start
+  setTimeout(()=>{
+    finalSound.currentTime = 0;
+    finalSound.play();
+  }, 1000);
+
+  // Show final "She Said YES" overlay without removing <audio>
+  setTimeout(()=>{
+    const finalOverlay = document.createElement("div");
+    finalOverlay.style.position = "fixed";
+    finalOverlay.style.top = 0;
+    finalOverlay.style.left = 0;
+    finalOverlay.style.width = "100%";
+    finalOverlay.style.height = "100%";
+    finalOverlay.style.display = "flex";
+    finalOverlay.style.justifyContent = "center";
+    finalOverlay.style.alignItems = "center";
+    finalOverlay.style.background = "linear-gradient(135deg,#ff69b4,#ff1493)";
+    finalOverlay.style.color = "white";
+    finalOverlay.style.fontFamily = "'Playfair Display', serif";
+    finalOverlay.style.fontSize = "60px";
+    finalOverlay.style.zIndex = "9999";
+    finalOverlay.style.animation = "fadeIn 2s ease forwards";
+    finalOverlay.innerText = "She Said YES";
+
+    document.body.appendChild(finalOverlay);
+  }, 2500);
+}
+
+// Modified createFirework to accept x,y for full screen explosions
+function createFirework(x = null, y = null){
+  const fx = x || Math.random()*canvas.width;
+  const fy = y || Math.random()*canvas.height/2;
+
+  fireworkSound.currentTime = 0;
+  fireworkSound.play();
+
+  for(let i=0;i<300;i++){
+    particles.push({
+      x: fx,
+      y: fy,
+      speedX: (Math.random()-0.5)*12,
+      speedY: (Math.random()-0.5)*12,
+      gravity: 0.15,
+      size: 3 + Math.random()*4,
+      color: ["#ff69b4","#ff1493","#ffc0cb","#ff85a2","#ff4d88"][Math.floor(Math.random()*5)],
+      life: 120
+    });
+  }
+
+  if(!animationRunning){
+    animationRunning = true;
+    animateFireworks();
+  }
+}
+
 </script>
 
 </body>
