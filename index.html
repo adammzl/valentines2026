@@ -18,7 +18,7 @@ body { overflow:hidden; font-family:'Poppins', sans-serif; background:#fff; }
 /* ---------------- LETTER PAGE ---------------- */
 #letterSection {
   position:fixed; width:100%; height:100vh; display:flex; justify-content:center; align-items:center;
-  opacity:0; transition:opacity 2s ease; perspective:1200px;
+  opacity:0; transition:opacity 1.5s ease; perspective:1200px;
   background: linear-gradient(-45deg, #ffb6c1, #ff69b4, #ff1493, #ffc0cb);
   background-size: 400% 400%;
   animation: bgGradient 20s ease infinite;
@@ -29,19 +29,41 @@ body { overflow:hidden; font-family:'Poppins', sans-serif; background:#fff; }
 
 .letter {
   width:500px; min-height:320px; background:rgba(255,255,255,0.85); border-radius:20px;
-  box-shadow:0 30px 60px rgba(255,105,180,0.25); transform-origin:top; transform:rotateX(-90deg);
+  box-shadow:0 30px 60px rgba(255,105,180,0.25); transform-origin:top center; transform:rotateX(-90deg);
   transition:transform 2s cubic-bezier(.22,1,.36,1); padding:50px; text-align:center; position:relative; overflow:hidden;
   z-index:1; display:flex; flex-direction:column; justify-content:center; align-items:center;
   clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
 }
-.letter.open { transform:rotateX(0); }
+.letter.open { animation:letterOpen 2s forwards; }
+
+@keyframes letterOpen {
+  0% { transform:rotateX(-90deg) scale(0.8); }
+  50% { transform:rotateX(10deg) scale(1.05); }
+  100% { transform:rotateX(0deg) scale(1); }
+}
 
 .valentine-text {
-  font-family:'Playfair Display', serif; font-size:28px; color:#ff4d88; opacity:1; display:inline-block; line-height:1.6;
-  letter-spacing:2px; transform-style:preserve-3d;
+  font-family:'Playfair Display', serif;
+  font-size:28px;
+  color:#ff4d88;
+  opacity:1;
+  display:inline-block;
+  line-height:1.8;
+  letter-spacing:3px; /* increased spacing for elegance */
+  transform-style:preserve-3d;
 }
-.valentine-text span { display:inline-block; opacity:0; transform:translateY(30px) rotateX(20deg); animation:letterFade 0.6s forwards; }
-@keyframes letterFade { to{opacity:1; transform:translateY(0) rotateX(0);} }
+.valentine-text span {
+  display:inline-block;
+  opacity:0;
+  transform:translateY(30px) rotateX(20deg);
+  animation:letterFade 0.6s forwards;
+}
+@keyframes letterFade {
+  to {
+    opacity:1;
+    transform:translateY(0) rotateX(0);
+  }
+}
 
 /* BUTTONS */
 .buttons { margin-top:30px; opacity:0; transition:opacity 1.5s ease 1.5s; }
@@ -49,7 +71,7 @@ body { overflow:hidden; font-family:'Poppins', sans-serif; background:#fff; }
 button { padding:14px 30px; margin:10px; border:none; border-radius:40px; font-size:15px; cursor:pointer; transition:all 0.3s ease; }
 .yesBtn { background:#ff69b4; color:white; }
 .yesBtn:hover { background:#ff1493; transform:scale(1.05); }
-.noBtn { background:#ffb6c1; color:white; position:absolute; transition:all 0.3s ease; }
+.noBtn { background:#ffb6c1; color:white; position:absolute; transition:all 0.3s ease; cursor:pointer; }
 
 /* FIREWORK CANVAS */
 canvas { position:fixed; top:0; left:0; pointer-events:none; z-index:2; }
@@ -61,9 +83,8 @@ canvas { position:fixed; top:0; left:0; pointer-events:none; z-index:2; }
 #finalOverlay { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; overflow:hidden; z-index:9999; }
 #finalOverlay video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; }
 #finalText { position:relative; z-index:1; font-family:'Playfair Display', serif; font-size:8vw; display:flex; justify-content:center; align-items:center; }
-.final-letter { position:relative; display:inline-block; margin:0 4px; background-clip:text; -webkit-background-clip:text; color:transparent;
+.final-letter { position:relative; display:inline-block; margin:0 4px; background:linear-gradient(90deg, #ff69b4, #ff1493, #ffc0cb, #ff85a2); background-clip:text; -webkit-background-clip:text; color:transparent;
   animation:gradientShift 5s linear infinite, pulse 1.5s ease-in-out infinite, wiggle 1s ease-in-out infinite;
-  background:linear-gradient(90deg, #ff69b4, #ff1493, #ffc0cb, #ff85a2);
 }
 .sparkle { position:absolute; width:6px; height:6px; border-radius:50%; background:white; opacity:0.8; animation:twinkle 0.8s ease-in-out infinite alternate; }
 @keyframes gradientShift { 0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;} }
@@ -136,11 +157,13 @@ video.onended=()=>{
     videoSection.style.display="none";
     letterSection.classList.add("show");
     setTimeout(()=>{
-      letter.classList.add("open");
-      animateLetterText("Mir'atun Solehah, Dunia saya, Rumah saya, Cinta saya, Will you be my valentine?");
-      buttons.classList.add("show");
-      createFloatingSymbols();
-    },800);
+  letter.classList.add("open");
+  animateLetterText("Mir'atun Solehah, Cinta Saya, Dunia Saya, Rumah Saya, Sayang Saya, Will you be my valentines?");
+  buttons.classList.add("show");
+  createFloatingSymbols();
+  startNoButtonMovement();
+},800);
+
   },1500);
 };
 
@@ -155,31 +178,35 @@ function animateLetterText(str){
   }
 }
 
-/* NO BUTTON */
-noBtn.style.position="absolute";
-noBtn.style.left="55%";
-noBtn.style.top="60%";
-noBtn.addEventListener("mouseenter",()=>{
-  hoverSound.currentTime=0; hoverSound.play();
-  const maxX=window.innerWidth-noBtn.offsetWidth-20;
-  const maxY=window.innerHeight-noBtn.offsetHeight-20;
-  const newX=Math.random()*maxX;
-  const newY=Math.random()*maxY;
-  escapeSound.currentTime=0; escapeSound.play();
-  noBtn.style.transition="all 0.3s cubic-bezier(.22,1,.36,1)";
-  noBtn.style.left=newX+"px"; noBtn.style.top=newY+"px";
-});
+/* NO BUTTON CONTINUOUS MOVEMENT */
+function startNoButtonMovement(){
+  const moveNoButton=()=>{
+    const maxX=window.innerWidth-noBtn.offsetWidth-20;
+    const maxY=window.innerHeight-noBtn.offsetHeight-20;
+    const newX=Math.random()*maxX;
+    const newY=Math.random()*maxY;
+    noBtn.style.transition="all 0.4s cubic-bezier(.22,1,.36,1)";
+    noBtn.style.left=newX+"px";
+    noBtn.style.top=newY+"px";
+  };
+  noBtn.addEventListener("mouseenter",()=>{
+    hoverSound.currentTime=0; hoverSound.play();
+    escapeSound.currentTime=0; escapeSound.play();
+    moveNoButton();
+  });
+}
 
 /* FIREWORKS */
 const canvas=document.getElementById("confetti");
 const ctx=canvas.getContext("2d");
 function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
-resizeCanvas();window.addEventListener("resize",resizeCanvas);
+resizeCanvas(); window.addEventListener("resize",resizeCanvas);
 let particles=[]; let animating=false;
 function createFirework(x=null,y=null){
   const fx=x||Math.random()*canvas.width;
   const fy=y||Math.random()*canvas.height/2;
   fireworkSound.currentTime=0; fireworkSound.play();
+  fireworkSound.volume = 0.5;
   for(let i=0;i<400;i++){
     particles.push({x:fx,y:fy,speedX:(Math.random()-0.5)*16,speedY:(Math.random()-0.5)*16,gravity:0.2,size:3+Math.random()*5,color:["#ff69b4","#ff1493","#ffc0cb","#ff85a2","#ff4d88"][Math.floor(Math.random()*5)],life:140});
   }
@@ -222,7 +249,7 @@ function sayYes(){
   letter.style.transition="all 1s cubic-bezier(.22,1,.36,1)";
   letter.style.transform="scale(1.3)"; letter.style.opacity="0";
 
-  // Multiple fireworks
+  // Fireworks sequence
   for(let i=0;i<8;i++){ setTimeout(()=>createFirework(Math.random()*canvas.width, Math.random()*canvas.height/2), i*400); }
 
   setTimeout(()=>{ finalSound.currentTime=0; finalSound.play(); },1000);
@@ -237,10 +264,10 @@ function sayYes(){
     const word="YEAYYYYY";
     for(let i=0;i<word.length;i++){
       const span=document.createElement("span"); span.classList.add("final-letter"); span.innerText=word[i];
-      for(let j=0;j<4;j++){
+      for(let j=0;j<6;j++){
         const sparkle=document.createElement("div"); sparkle.classList.add("sparkle");
-        sparkle.style.top=(Math.random()*80-40)+"%";
-        sparkle.style.left=(Math.random()*80-40)+"%";
+        sparkle.style.top=(Math.random()*120-60)+"%";
+        sparkle.style.left=(Math.random()*120-60)+"%";
         span.appendChild(sparkle);
       }
       h1.appendChild(span);
@@ -248,9 +275,8 @@ function sayYes(){
     finalOverlay.appendChild(h1);
     document.body.appendChild(finalOverlay);
 
-    // Camera shake effect
-    let intensity=10;
-    let shakes=0;
+    // Camera shake
+    let intensity=12; let shakes=0;
     const shakeInterval=setInterval(()=>{
       finalOverlay.style.transform=`translate(${(Math.random()-0.5)*intensity}px, ${(Math.random()-0.5)*intensity}px)`;
       shakes++; if(shakes>15){ clearInterval(shakeInterval); finalOverlay.style.transform="translate(0,0)"; }
