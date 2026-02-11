@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Valentine ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: #fff0f5;
+  overflow: hidden;
+}
+
+/* VIDEO SECTION */
+
+#videoSection {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1.5s ease;
+  z-index: 10;
+}
+
+#introVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* LETTER SECTION */
+
+#letterSection {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff0f5;
+  opacity: 0;
+  transition: opacity 2s ease;
+  perspective: 1200px;
+}
+
+#letterSection.show {
+  opacity: 1;
+}
+
+/* LETTER */
+
+.letter {
+  width: 350px;
+  height: 220px;
+  background: #fffafc;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(255,105,180,0.3);
+  transform-style: preserve-3d;
+  transform-origin: top;
+  transform: rotateX(-90deg);
+  transition: transform 2s ease;
+  padding: 30px;
+  text-align: center;
+}
+
+.letter.open {
+  transform: rotateX(0deg);
+}
+
+/* TEXT */
+
+.valentine-text {
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  color: #5a3e4d;
+  opacity: 0;
+  transition: opacity 2s ease 1.5s;
+}
+
+.valentine-text.show {
+  opacity: 1;
+}
+
+/* BUTTONS */
+
+.buttons {
+  margin-top: 20px;
+  opacity: 0;
+  transition: opacity 2s ease 2s;
+}
+
+.buttons.show {
+  opacity: 1;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.yesBtn {
+  background: #ff69b4;
+  color: white;
+}
+
+.yesBtn:hover {
+  background: #ff1493;
+}
+
+.noBtn {
+  background: #ffb6c1;
+  color: white;
+  position: relative;
+}
+</style>
+</head>
+<body>
+
+<!-- VIDEO SECTION -->
+<div id="videoSection">
+  <video id="introVideo" autoplay muted playsinline>
+    <source src="yourvideo.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- LETTER SECTION -->
+<div id="letterSection">
+  <div class="letter" id="letter">
+    <div class="valentine-text" id="valentineText">
+      Will you be my Valentine?
+    </div>
+
+    <div class="buttons" id="buttons">
+      <button class="yesBtn" onclick="sayYes()">Yes ❤️</button>
+      <button class="noBtn" id="noBtn">No 😈</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const video = document.getElementById("introVideo");
+const videoSection = document.getElementById("videoSection");
+const letterSection = document.getElementById("letterSection");
+const letter = document.getElementById("letter");
+const text = document.getElementById("valentineText");
+const buttons = document.getElementById("buttons");
+const noBtn = document.getElementById("noBtn");
+
+video.onended = function() {
+  videoSection.style.opacity = "0";
+
+  setTimeout(() => {
+    videoSection.style.display = "none";
+    letterSection.classList.add("show");
+
+    setTimeout(() => {
+      letter.classList.add("open");
+      text.classList.add("show");
+      buttons.classList.add("show");
+    }, 800);
+
+  }, 1500);
+};
+
+// No button runs away
+noBtn.addEventListener("mouseover", () => {
+  const x = Math.random() * (window.innerWidth - 100);
+  const y = Math.random() * (window.innerHeight - 50);
+  noBtn.style.position = "fixed";
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+});
+
+// Yes button
+function sayYes() {
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#fff0f5;
+      font-family:'Great Vibes',cursive;
+      font-size:50px;
+      color:#ff1493;
+    ">
+      She said YES ❤️
+    </div>
+  `;
+}
+</script>
+
+</body>
+</html>
